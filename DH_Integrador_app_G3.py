@@ -36,8 +36,6 @@ DF_std_ext2 = pd.read_csv('DF_std_ext2.csv')
 
 DF_best_features = pd.read_csv('DF_best_features.csv')
 
-
-
 # Preparando dados para Modelos
 
 DF_std = DF
@@ -145,6 +143,33 @@ st.sidebar.plotly_chart(fig, use_container_width=True, use_container_height=True
 #########
 # Plots #
 #########
+
+# Gráfico em formato de torta para mostrar a distribuição de liberdade no mundo.
+
+score_freedom = [0, 4.9, 5.9, 6.9, 7.9, 10 ]
+score_group = pd.cut(DF_std.EFW1_Econ_10_20, bins = score_freedom, right = False)
+category_group_freedom  = ['1-Reprimido', '2-Majoritariamente Não-Livre',
+                           '3-Moderadamente Livre', '4-Majoritariamente Livre', '5-Livre']
+score_group = pd.cut(DF_std.EFW1_Econ_10_20, bins = score_freedom, labels= category_group_freedom )
+DF_std['Freedom_Rating'] = score_group
+free_eco = round(DF_std['Freedom_Rating'].value_counts()/len(DF_std)*100,2)
+explode = (0, 0, 0, 0.05, 0.5)
+
+DF_pie_free = pd.DataFrame(free_eco)
+DF_pie_free = DF_pie_free.reset_index()
+DF_pie_free.columns = ['Situação','Freedom_Rating']
+
+fig_pie = px.pie(DF_pie_free, names='Situação', values='Freedom_Rating', template='gridon',
+                 width=900, height=900)
+
+fig_pie.update_traces(pull=explode, hoverinfo='percent', textfont_size=30)
+
+fig_pie.update_layout(title='Classificação de Liberdade', yaxis_title="", legend_title="Situação",
+                      font=dict(family="Arial, monospace", size=30, color="black"))
+
+st.plotly_chart(fig_pie, use_container_width=False, use_container_height=False)
+
+
 
 DF_plot = DF_std_ext2.copy()
 
